@@ -26,7 +26,7 @@
 ## - redirect only stderr to the logfile, so stdout can be processed as usual:
 ##   grep localhost /etc/hosts 2> "${_L}"
 ##
-export __ScriptSubCommandLog=1 # default: 0
+export __ScriptSubCommandLog=0 # default: 0
 ## directory to create logfile in
 export __ScriptSubCommandLogDir="/tmp" # default: /var/log
 
@@ -59,9 +59,9 @@ export __ScriptUmask=022 # default: 077
 
 ## timestamp format for the message functions,
 ## will be passed to date(1).
-## default: "%Y-%m-%d %H:%M:%S %:z"
-export __MsgTimestampFormat="[%Y-%m-%d %H:%M:%S %:z]" # with brackets
-#export __MsgTimestampFormat="[%Y-%m-%d %H:%M:%S.%N %:z]" # with brackets and nanoseconds
+## default: "%Y-%m-%d %H:%M:%S %:Z"
+export __MsgTimestampFormat="[%Y-%m-%d %H:%M:%S %Z]" # with brackets
+#export __MsgTimestampFormat="[%Y-%m-%d %H:%M:%S.%N %Z]" # with brackets and nanoseconds
 
 ## -- bashinator message printing settings --
 
@@ -112,14 +112,14 @@ export __PrintDebug=1   # default: 0
 ## -- bashinator message logging settings --
 
 ## enable/disable logging of messages by severity
-export __LogDebug=1   # default: 0
-#export __LogInfo=0    # default: 1
-#export __LogNotice=0  # default: 1
-#export __LogWarning=0 # default: 1
-#export __LogErr=0     # default: 1
-#export __LogCrit=0    # default: 1
-#export __LogAlert=0   # default: 1
-#export __LogEmerg=0   # default: 1
+export __LogDebug=0   # default: 0
+export __LogInfo=0    # default: 1
+export __LogNotice=0  # default: 1
+export __LogWarning=0 # default: 1
+export __LogErr=0     # default: 1
+export __LogCrit=0    # default: 1
+export __LogAlert=0   # default: 1
+export __LogEmerg=0   # default: 1
 
 ## enable/disable prefixing the messages to be logged with...
 ##
@@ -159,18 +159,19 @@ export __LogDebug=1   # default: 0
 #export __LogTarget="file:/var/log/${__ScriptName}.log:overwrite,syslog:user"
 #export __LogTarget="file:/var/log/${__ScriptName}.log:append,file:/var/log/${__ScriptName}-current.log:overwrite"
 #export __LogTarget="file:/var/log/${__ScriptName}.$(date +"%Y%m%d-%H%M%S").log"
+export __LogTarget="file:${__ScriptPath}/${__ScriptName}.log.$(date +"%Y%m%d"):append"
 
 ## -- bashinator message mailing settings --
 
 ## enable/disable mailing of messages by severity
-export __MailDebug=1   # default: 0
-#export __MailInfo=0    # default: 1
-#export __MailNotice=0  # default: 1
-#export __MailWarning=0 # default: 1
-#export __MailErr=0     # default: 1
-#export __MailCrit=0    # default: 1
-#export __MailAlert=0   # default: 1
-#export __MailEmerg=0   # default: 1
+export __MailDebug=0   # default: 0
+export __MailInfo=0    # default: 1
+export __MailNotice=0  # default: 1
+export __MailWarning=0 # default: 1
+export __MailErr=0     # default: 1
+export __MailCrit=0    # default: 1
+export __MailAlert=0   # default: 1
+export __MailEmerg=0   # default: 1
 
 ## enable/disable prefixing the messages to be mailed with...
 ##

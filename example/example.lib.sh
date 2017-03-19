@@ -77,6 +77,8 @@ function __init() {
 function __main() {
 
 	## -- BEGIN YOUR OWN APPLICATION MAIN CODE HERE --
+    __SelectExample;
+    return;
 
 	local i
 	for i in debug info notice warning err crit alert emerg; do
