@@ -1661,3 +1661,42 @@ function __SelectExample()
     esac
 }
 
+function __SelectExample2
+{
+    local oldifs=IFS
+    declare -a options
+    while ISF='\n' read  -r file;do
+        options+=("$file");
+    done <${__TIMESTAMEFILE}
+    unset IFS
+
+    __Echo_Normal "==========================="
+    __Echo_Yellow "选择你想要上传的时间点："
+    __Echo_Blue   "打包时间 0:当前时间"
+    local idx=0
+    while [[ $idx -lt ${#options[@]} ]];do
+        __Echo_Normal "打包时间 "$(($idx+1))":${options[$idx]}"
+        idx=$(($idx+1))
+    done
+
+    read -p "Enter your choice: " YourSelect
+    __msg debug "choice ${YourSelect}"
+
+    if [[ ${YourSelect} -gt 0 && ${YourSelect} -le ${#options[@]} ]];then
+        idx=$(($YourSelect-1));
+        local timestamp="${options[$idx]}"
+        timestamp=${timestamp:1:19}
+        local tst=${timestamp:2:2}
+        tst=${tst}${timestamp:5:2}
+        tst=${tst}${timestamp:8:2}
+        tst=${tst}${timestamp:11:2}
+        tst=${tst}${timestamp:14:2}
+        tst=${tst}.${timestamp:17:2}
+        touch -t "${tst}" ${__TIMESTAMEFILE}
+        __msg debug "choice timestamp:${timestamp}"
+    else
+        export __ChoiceExit=1;
+        __msg debug "export __ChoiceExit=1"
+    fi
+}
+
