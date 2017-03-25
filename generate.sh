@@ -1708,7 +1708,7 @@ function __main() {
         exit
     fi
 
-    export SourceBashinatorPath="/data/CodeRepo/bashinator/bashinator/"
+    export SourceBashinatorPath="./"
     export BUILDDIR="./build"
     export PROJECTNAME="$1"
     export PROJECTDIR="./build/${PROJECTNAME}"
@@ -1887,11 +1887,12 @@ export __BashinatorLibrary="${__BashinatorLibrary:-${__ScriptPath}/bashinator.li
 #export __BashinatorConfig="${__ScriptPath}/bashinator.cfg.sh"
 #export __BashinatorLibrary="${__ScriptPath}/bashinator.lib.0.sh" # bashinator API v0
 
-if ! source "${__BashinatorConfig}"; then
+if [[ -f ${__BashinatorConfig} ]] && ! source "${__BashinatorConfig}"; then
     echo "!!! FATAL: failed to source bashinator config '${__BashinatorConfig}'" 1>&2
     exit 2
 fi
-if ! source "${__BashinatorLibrary}"; then
+
+if [[ -f ${__BashinatorConfig} ]] && ! source "${__BashinatorLibrary}"; then
     echo "!!! FATAL: failed to source bashinator library '${__BashinatorLibrary}'" 1>&2
     exit 2
 fi
