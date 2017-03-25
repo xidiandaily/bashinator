@@ -99,6 +99,20 @@ function __main() {
 
 }
 
+
+function Help(){
+    echo "Usage: ${__ScriptFile}  [OPTION...] [dst]"
+    echo ""
+    echo " [OPTION]"
+    echo "     balabalabala ..     balabalabala ...."
+    echo ""
+    echo " [EXAMPLE]"
+    echo "   ${__ScriptFile} option...."
+    echo ""
+    echo " [AUTHOR]"
+    echo "   lawrencechi 2017.03.17"
+}
+
 ##
 ## application worker functions
 ##
