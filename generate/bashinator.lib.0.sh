@@ -1,130 +1,166 @@
-#!/bin/bash
-## =========Merge file: ./build/generate/bashinator.cfg.sh =========
+## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
+##
+## bashinator shell script framework library
+##
+## Created by Wolfram Schlich <wschlich@gentoo.org>
+## Licensed under the GNU GPLv3
+## Web: http://www.bashinator.org/
+## Code: https://github.com/wschlich/bashinator/
+##
+
+##
+## REQUIRED PROGRAMS
+## =================
+## - rm
+## - touch
+## - mktemp
+## - cat
+## - logger
+## - sed
+## - date
+## - sendmail (default /usr/sbin/sendmail, can be overridden with __SendmailBin)
+##
+
+##
+## GLOBAL VARIABLES
+## ======================================
+## D: defined by bashinator
+## u: used by bashinator if defined
+## --------------------------------------
+##
+## D: __BashinatorRequiredBashVersion
+##
+## u: __DieExitCode
+## u: __ScriptExitCode
+## u: __ScriptDieExitCode
+##
+## u: __ScriptFile
+## u: __ScriptPath
+## u: __ScriptName
+## u: __ScriptHost
+## u: __ScriptLock
+## D: __ScriptLockFile
+## u: __ScriptLockDir
+## u: __ScriptSubCommandLog
+## D: __ScriptSubCommandLogFile + _L
+## u: __ScriptSubCommandLogDir
+## u: __ScriptUseSafePathEnv
+## u: __ScriptUmask
+##
+## D: __MsgArray
+## u: __MsgQuiet
+## u: __MsgTimestampFormat
+##
+## u: __PrintDebug
+## u: __PrintInfo
+## u: __PrintNotice
+## u: __PrintWarning
+## u: __PrintErr
+## u: __PrintCrit
+## u: __PrintAlert
+## u: __PrintEmerg
+## u: __PrintPrefixTimestamp
+## u: __PrintPrefixSeverity
+## u: __PrintPrefixSource
+## u: __PrintPrefixSeverity7
+## u: __PrintPrefixSeverity6
+## u: __PrintPrefixSeverity5
+## u: __PrintPrefixSeverity4
+## u: __PrintPrefixSeverity3
+## u: __PrintPrefixSeverity2
+## u: __PrintPrefixSeverity1
+## u: __PrintPrefixSeverity0
+## u: __PrintColorSeverity7
+## u: __PrintColorSeverity6
+## u: __PrintColorSeverity5
+## u: __PrintColorSeverity4
+## u: __PrintColorSeverity3
+## u: __PrintColorSeverity2
+## u: __PrintColorSeverity1
+## u: __PrintColorSeverity0
+##
+## u: __LogDebug
+## u: __LogInfo
+## u: __LogNotice
+## u: __LogWarning
+## u: __LogErr
+## u: __LogCrit
+## u: __LogAlert
+## u: __LogEmerg
+## u: __LogPrefixTimestamp
+## u: __LogPrefixSeverity
+## u: __LogPrefixSource
+## u: __LogPrefixSeverity7
+## u: __LogPrefixSeverity6
+## u: __LogPrefixSeverity5
+## u: __LogPrefixSeverity4
+## u: __LogPrefixSeverity3
+## u: __LogPrefixSeverity2
+## u: __LogPrefixSeverity1
+## u: __LogPrefixSeverity0
+## u: __LogColorSeverity7
+## u: __LogColorSeverity6
+## u: __LogColorSeverity5
+## u: __LogColorSeverity4
+## u: __LogColorSeverity3
+## u: __LogColorSeverity2
+## u: __LogColorSeverity1
+## u: __LogColorSeverity0
+## u: __LogTarget
+## D: __LogFileHasBeenWrittenTo
+##
+## u: __MailDebug
+## u: __MailInfo
+## u: __MailNotice
+## u: __MailWarning
+## u: __MailErr
+## u: __MailCrit
+## u: __MailAlert
+## u: __MailEmerg
+## u: __MailPrefixTimestamp
+## u: __MailPrefixSeverity
+## u: __MailPrefixSource
+## u: __MailPrefixSeverity7
+## u: __MailPrefixSeverity6
+## u: __MailPrefixSeverity5
+## u: __MailPrefixSeverity4
+## u: __MailPrefixSeverity3
+## u: __MailPrefixSeverity2
+## u: __MailPrefixSeverity1
+## u: __MailPrefixSeverity0
+## u: __MailColorSeverity7
+## u: __MailColorSeverity6
+## u: __MailColorSeverity5
+## u: __MailColorSeverity4
+## u: __MailColorSeverity3
+## u: __MailColorSeverity2
+## u: __MailColorSeverity1
+## u: __MailColorSeverity0
+## u: __MailFrom
+## u: __MailEnvelopeFrom
+## u: __MailRecipient
+## u: __MailSubject
+##
+## u: __SendmailBin
+## u: __SendmailArgs
+##
+## D: __TrapSignals
+##
+## u: BASH_VERSINFO
+## u: EUID
+## D: PATH
+## u: TERM
+## u: USER
+##
 
 
-
-export __ScriptSubCommandLog=0 # default: 0
-export __ScriptSubCommandLogDir="/tmp" # default: /var/log
-
-export __ScriptLock=0 # default: 0
-export __ScriptLockDir="/tmp" # default: /var/lock
-
-#export __ScriptUseSafePathEnv=0 # default: 1
-
-export __ScriptUmask=022 # default: 077
-
-#export __ScriptGenerateStackTrace=0 # default: 1
-
-
-#export __MsgQuiet=1 # default: 0
-
-export __MsgTimestampFormat="[%Y-%m-%d %H:%M:%S %Z]" # with brackets
-#export __MsgTimestampFormat="[%Y-%m-%d %H:%M:%S.%N %Z]" # with brackets and nanoseconds
-
-
-export __PrintDebug=0   # default: 0
-export __PrintInfo=0    # default: 1
-export __PrintNotice=0  # default: 1
-export __PrintWarning=0 # default: 1
-export __PrintErr=0     # default: 1
-export __PrintCrit=0    # default: 1
-export __PrintAlert=0   # default: 1
-export __PrintEmerg=0   # default: 1
-
-#export __PrintPrefixScriptNamePid=0 # default: 1
-#export __PrintPrefixTimestamp=0 # default: 1
-#export __PrintPrefixSeverity=0 # default: 1
-#export __PrintPrefixSource=0 # default: 1
-
-#export __PrintPrefixSeverity7=">>> [____DEBUG]" # LOG_DEBUG
-#export __PrintPrefixSeverity6=">>> [_____INFO]" # LOG_INFO
-#export __PrintPrefixSeverity5=">>> [___NOTICE]" # LOG_NOTICE
-#export __PrintPrefixSeverity4="!!! [__WARNING]" # LOG_WARNING
-#export __PrintPrefixSeverity3="!!! [____ERROR]" # LOG_ERR
-#export __PrintPrefixSeverity2="!!! [_CRITICAL]" # LOG_CRIT
-#export __PrintPrefixSeverity1="!!! [____ALERT]" # LOG_ALERT
-#export __PrintPrefixSeverity0="!!! [EMERGENCY]" # LOG_EMERG
-
-#export __PrintColorSeverity7="1;34"    # LOG_DEBUG:   blue on default
-#export __PrintColorSeverity6="1;36"    # LOG_INFO:    cyan on default
-#export __PrintColorSeverity5="1;32"    # LOG_NOTICE:  green on default
-#export __PrintColorSeverity4="1;33"    # LOG_WARNING: yellow on default
-#export __PrintColorSeverity3="1;31"    # LOG_ERR:     red on default
-#export __PrintColorSeverity2="1;37;41" # LOG_CRIT:    white on red
-#export __PrintColorSeverity1="1;33;41" # LOG_ALERT:   yellow on red
-#export __PrintColorSeverity0="1;37;45" # LOG_EMERG:   white on magenta
-
-
-export __LogDebug=0   # default: 0
-export __LogInfo=0    # default: 1
-export __LogNotice=0  # default: 1
-export __LogWarning=0 # default: 1
-export __LogErr=0     # default: 1
-export __LogCrit=0    # default: 1
-export __LogAlert=0   # default: 1
-export __LogEmerg=0   # default: 1
-
-#export __LogPrefixScriptNamePid=0 # default: 1
-#export __LogPrefixTimestamp=0 # default: 1
-#export __LogPrefixSeverity=0 # default: 1
-#export __LogPrefixSource=0 # default: 1
-
-#export __LogPrefixSeverity7=">>> [____DEBUG]" # LOG_DEBUG
-#export __LogPrefixSeverity6=">>> [_____INFO]" # LOG_INFO
-#export __LogPrefixSeverity5=">>> [___NOTICE]" # LOG_NOTICE
-#export __LogPrefixSeverity4="!!! [__WARNING]" # LOG_WARNING
-#export __LogPrefixSeverity3="!!! [____ERROR]" # LOG_ERR
-#export __LogPrefixSeverity2="!!! [_CRITICAL]" # LOG_CRIT
-#export __LogPrefixSeverity1="!!! [____ALERT]" # LOG_ALERT
-#export __LogPrefixSeverity0="!!! [EMERGENCY]" # LOG_EMERG
-
-#export __LogTarget="syslog:user"
-#export __LogTarget="file:/var/log/${__ScriptName}.log"
-#export __LogTarget="file:/var/log/${__ScriptName}.log:append"
-#export __LogTarget="file:/var/log/${__ScriptName}.log:overwrite"
-#export __LogTarget="file:/var/log/${__ScriptName}.log:append,syslog:user"
-#export __LogTarget="file:/var/log/${__ScriptName}.log:overwrite,syslog:user"
-#export __LogTarget="file:/var/log/${__ScriptName}.log:append,file:/var/log/${__ScriptName}-current.log:overwrite"
-#export __LogTarget="file:/var/log/${__ScriptName}.$(date +"%Y%m%d-%H%M%S").log"
-export __LogTarget="file:${__ScriptPath}/${__ScriptName}.log.$(date +"%Y%m%d"):append"
-
-
-export __MailDebug=0   # default: 0
-export __MailInfo=0    # default: 1
-export __MailNotice=0  # default: 1
-export __MailWarning=0 # default: 1
-export __MailErr=0     # default: 1
-export __MailCrit=0    # default: 1
-export __MailAlert=0   # default: 1
-export __MailEmerg=0   # default: 1
-
-#export __MailPrefixScriptNamePid=1 # default: 0
-#export __MailPrefixTimestamp=0 # default: 1
-#export __MailPrefixSeverity=0 # default: 1
-#export __MailPrefixSource=0 # default: 1
-
-#export __MailPrefixSeverity7="[____DEBUG]" # LOG_DEBUG
-#export __MailPrefixSeverity6="[_____INFO]" # LOG_INFO
-#export __MailPrefixSeverity5="[___NOTICE]" # LOG_NOTICE
-#export __MailPrefixSeverity4="[__WARNING]" # LOG_WARNING
-#export __MailPrefixSeverity3="[____ERROR]" # LOG_ERR
-#export __MailPrefixSeverity2="[_CRITICAL]" # LOG_CRIT
-#export __MailPrefixSeverity1="[____ALERT]" # LOG_ALERT
-#export __MailPrefixSeverity0="[EMERGENCY]" # LOG_EMERG
-
-#export __MailAppendScriptSubCommandLog=0 # default: 1
-
-#export __MailFrom="${USER} <${USER}@${__ScriptHost}>"
-#export __MailEnvelopeFrom="${USER}@${__ScriptHost}"
-#export __MailRecipient="${USER}@${__ScriptHost}"
-#export __MailSubject="Messages from ${__ScriptFile} running on ${__ScriptHost}"
-## =========Merge file: ./build/generate/bashinator.lib.0.sh =========
-
-
-
-
+## define the required minimum bash version for this
+## bashinator release to function properly
 export __BashinatorRequiredBashVersion=3.2.0
 
+##
+## bashinator control functions
+##
 
 function __boot() {
 
@@ -468,6 +504,9 @@ function __die() {
 
 } # __die()
 
+##
+## bashinator message functions
+##
 
 function __msgPrint() {
 	
@@ -1282,6 +1321,9 @@ function __mail() {
 
 } # __mail()
 
+##
+## trap functions
+##
 
 function __trapExit() {
 
@@ -1320,6 +1362,7 @@ function __trapExit() {
 
 } # __trapExit()
 
+## enable the __trapExit function for script exits
 trap "__trapExit" EXIT
 
 function __trapSignals() {
@@ -1374,6 +1417,7 @@ function __trapSignals() {
 
 } # __trapSignals()
 
+## trap certain signals using __trapSignals()
 declare -a __TrapSignals=(
 	SIGHUP  # 1
 	SIGINT  # 2 (^C)
@@ -1387,6 +1431,9 @@ for signal in "${__TrapSignals[@]}"; do
 	trap "__trapSignals ${signal}" "${signal}"
 done
 
+##
+## misc helper functions
+##
 
 function __includeSource() {
 
@@ -1652,264 +1699,3 @@ function __SelectExample2
     fi
 }
 
-## =========Merge file: ./build/generate/generate.lib.sh =========
-
-
-
-function __init() {
-
-	## -- BEGIN YOUR OWN APPLICATION INITIALIZATION CODE HERE --
-
-	## parse command line options
-	while getopts 'xcp' opt; do
-		case "${opt}" in
-            x)
-                EnableDebugMode;
-                __Echo_Green "EnableDebugMode"
-                ;;
-			c)
-                export __CleanMode=1
-				;;
-			p)
-                export __OnefileMode=1
-				;;
-			## option without a required argument
-			:)
-				__die 2 "option -${OPTARG} requires an argument" # TODO FIXME: switch to __msg err
-				;;
-			## unknown option
-			\?)
-				__die 2 "unknown option -${OPTARG}" # TODO FIXME: switch to __msg err
-				;;
-			## this should never happen
-			*)
-				__die 2 "there's an error in the matrix!" # TODO FIXME: switch to __msg err
-				;;
-		esac
-		__msg debug "command line argument: -${opt}${OPTARG:+ '${OPTARG}'}"
-	done
-	## shift off options + arguments
-	let OPTIND--; shift ${OPTIND}; unset OPTIND
-	args="${@}"
-	set -- 
-
-	return 0 # success
-
-	## -- END YOUR OWN APPLICATION INITIALIZATION CODE HERE --
-}
-
-
-function __main() {
-	## -- BEGIN YOUR OWN APPLICATION MAIN CODE HERE --
-    set -- $args
-    if [[ -z $1 ]];then
-        __print debug "projectname empty $1"
-        Help
-        exit
-    fi
-
-    export SourceBashinatorPath="/data/CodeRepo/bashinator/bashinator/"
-    export BUILDDIR="./build"
-    export PROJECTNAME="$1"
-    export PROJECTDIR="./build/${PROJECTNAME}"
-
-    if [[ ${__CleanMode:-0} -eq 1 ]];then
-        Generate_Clean
-        exit
-    fi
-
-    if [[ ${__OnefileMode:-0} -eq 1 ]];then
-        Generate_Onefile
-        exit
-    fi
-
-    Generate_Normal 
-    __Echo_Green "Generate Sucess :${PROJECTDIR}"
-	## -- END YOUR OWN APPLICATION MAIN CODE HERE --
-}
-
-function EnableDebugMode()
-{
-    export __LogDebug=1     # default: 0
-    export __LogInfo=1      # default: 1
-    export __LogNotice=1    # default: 1
-    export __LogWarning=1   # default: 1
-    export __LogErr=1       # default: 1
-    export __LogCrit=1      # default: 1
-    export __LogAlert=1     # default: 1
-    export __LogEmerg=1     # default: 1
-
-    export __PrintDebug=1   # default: 0
-    export __PrintInfo=1    # default: 1
-    export __PrintNotice=1  # default: 1
-    export __PrintWarning=1 # default: 1
-    export __PrintErr=1     # default: 1
-    export __PrintCrit=1    # default: 1
-    export __PrintAlert=1   # default: 1
-    export __PrintEmerg=1   # default: 1
-}
-
-function Help()
-{
-    echo "Usage: ${__ScriptFile}  [OPTION...] projectname"
-    echo ""
-    echo " [OPTION]"
-    echo "     -x debug mode"
-    echo "     -c Clean Exist Project"
-    echo "     -p Packet Exist Project,all in one file"
-    echo ""
-    echo " [EXAMPLE]"
-    echo "   ${__ScriptFile} test  ;generate 'test' project"
-    echo "   ${__ScriptFile} -c test  ;clean 'test' project whithout note"
-    echo "   ${__ScriptFile} -p test  ;Packet 'test'"
-    echo ""
-    echo " [AUTHOR]"
-    echo "   lawrencechi 2017.03.25"
-}
-
-
-function Copy()
-{
-    if cp "$1" "$2" >>"${_L:-/dev/null}" 2>&1;then
-        __Echo_Green "cp $1 to $2 Done!"
-    else
-        __Echo_Red "cp $1 to $2 Faied!"
-        exit
-    fi
-}
-
-function Clean()
-{
-    if ! cat "$1" | grep -v '^##' > "${1}.clean";then
-        __Echo_Red "clean $1 Failed!"
-        exit
-    fi
-
-    if ! mv "${1}.clean" "$1";then
-        __Echo_Red "clean $1 Failth!"
-        exit
-    fi
-    __Echo_Green "clean $1 Done!"
-}
-
-function Merge()
-{
-    echo "## =========Merge file: ${1} =========" >> "$2"
-    if ! cat "$1" >>"$2";then
-        __Echo_Red "Merget $1 $2 Failed"
-    fi
-    __Echo_Green "Merget $1 $2 Successed"
-}
-
-function Generate_Normal
-{
-    if [[ ! -d $BUILDDIR ]];then
-        if ! mkdir "$BUILDDIR" >> "${_L:-/dev/null}" 2>&1;then
-            __Echo_Green "Create Build Directory:${BUILDDIR} Done!"
-        fi
-    fi
-
-    if [[ -d $PROJECTDIR ]];then
-        __Echo_Red "'${PROJECTDIR}' exits, generate failed!"
-        exit 1
-    fi
-
-    if ! mkdir "$PROJECTDIR" >> "${_L:-/dev/null}" 2>&1;then
-        __Echo_Green "Create Project Directory:${path} Done!"
-    fi
-
-    Copy "${SourceBashinatorPath}/bashinator.lib.0.sh"       "$PROJECTDIR/bashinator.lib.0.sh"
-    Copy "${SourceBashinatorPath}/example/example.sh"        "$PROJECTDIR/$PROJECTNAME.sh"
-    Copy "${SourceBashinatorPath}/example/example.lib.sh"    "$PROJECTDIR/$PROJECTNAME.lib.sh"
-    Copy "${SourceBashinatorPath}/example/example.cfg.sh"    "$PROJECTDIR/$PROJECTNAME.cfg.sh"
-    Copy "${SourceBashinatorPath}/example/bashinator.cfg.sh" "$PROJECTDIR/bashinator.cfg.sh"
-}
-
-function Generate_Clean()
-{
-    if [[ ! -d $PROJECTDIR ]];then
-        __Echo_Red "'${PROJECTDIR}' Not exits, Packet Failed!"
-        exit 1
-    fi
-
-    Clean "$PROJECTDIR/bashinator.lib.0.sh"
-    Clean "$PROJECTDIR/$PROJECTNAME.sh"
-    Clean "$PROJECTDIR/$PROJECTNAME.lib.sh"
-    Clean "$PROJECTDIR/$PROJECTNAME.cfg.sh"
-    Clean "$PROJECTDIR/bashinator.cfg.sh"
-
-    __Echo_Green "Generate_Clean"
-}
-
-function Generate_Onefile()
-{
-    if [[ ! -d $PROJECTDIR ]];then
-        __Echo_Red "'${PROJECTDIR}' Not exits, Packet Failed!"
-        exit 1
-    fi
-
-    echo "#!/bin/bash" >  "$PROJECTDIR/law.tmp.sh"
-    Merge "$PROJECTDIR/bashinator.cfg.sh"   "$PROJECTDIR/law.tmp.sh"
-    Merge "$PROJECTDIR/bashinator.lib.0.sh" "$PROJECTDIR/law.tmp.sh"
-    Merge "$PROJECTDIR/$PROJECTNAME.lib.sh" "$PROJECTDIR/law.tmp.sh"
-    Merge "$PROJECTDIR/$PROJECTNAME.cfg.sh" "$PROJECTDIR/law.tmp.sh"
-    Merge "$PROJECTDIR/$PROJECTNAME.sh"     "$PROJECTDIR/law.tmp.sh"
-
-    if cat "$PROJECTDIR/law.tmp.sh" | sed 's/^__requireSource/##__requireSource/' > "$PROJECTDIR/${PROJECTNAME}.packet.sh";then
-        __Echo_Green "rename $PROJECTDIR/law.tmp.sh $PROJECTDIR/${PROJECTNAME}.packet.sh Success!"
-    fi
-    if rm -f "$PROJECTDIR/law.tmp.sh" ;then
-        __Echo_Green "rm $PROJECTDIR/law.tmp.sh Sucessed"
-    fi
-    __Echo_Green "Generate_Onefile Sucess,packet file:${PROJECTNAME}.packet.sh"
-}
-
-## =========Merge file: ./build/generate/generate.cfg.sh =========
-
-
-
-## =========Merge file: ./build/generate/generate.sh =========
-#!/bin/bash
-
-
-
-export __ScriptFile=${0##*/} # evaluates to "example.sh"
-export __ScriptName=${__ScriptFile%.sh} # evaluates to "example"
-export __ScriptPath=${0%/*}; __ScriptPath=${__ScriptPath%/} # evaluates to /path/to/example/example.sh
-export __ScriptHost=$(hostname -f) # evaluates to the current hostname, e.g. host.example.com
-
-
-export __BashinatorConfig="${__BashinatorConfig:-${__ScriptPath}/bashinator.cfg.sh}"
-export __BashinatorLibrary="${__BashinatorLibrary:-${__ScriptPath}/bashinator.lib.0.sh}" # APIv0
-#export __BashinatorConfig="/etc/${__ScriptName}/bashinator.cfg.sh"
-#export __BashinatorLibrary="/usr/share/bashinator/bashinator.lib.0.sh" # bashinator API v0
-
-#export __BashinatorConfig="${__ScriptPath}/bashinator.cfg.sh"
-#export __BashinatorLibrary="${__ScriptPath}/bashinator.lib.0.sh" # bashinator API v0
-
-if ! source "${__BashinatorConfig}"; then
-    echo "!!! FATAL: failed to source bashinator config '${__BashinatorConfig}'" 1>&2
-    exit 2
-fi
-if ! source "${__BashinatorLibrary}"; then
-    echo "!!! FATAL: failed to source bashinator library '${__BashinatorLibrary}'" 1>&2
-    exit 2
-fi
-
-
-__boot
-
-
-export ApplicationConfig="${ApplicationConfig:-${__ScriptPath}/${__ScriptName}.cfg.sh}"
-export ApplicationLibrary="${ApplicationLibrary:-${__ScriptPath}/${__ScriptName}.lib.sh}"
-#export ApplicationConfig="/etc/${__ScriptName}/${__ScriptName}.cfg.sh"
-#export ApplicationLibrary="/usr/share/${__ScriptName}/${__ScriptName}.lib.sh"
-
-#export ApplicationConfig="${__ScriptPath}/${__ScriptName}.cfg.sh"
-#export ApplicationLibrary="${__ScriptPath}/${__ScriptName}.lib.sh"
-
-##__requireSource "${ApplicationConfig}"
-##__requireSource "${ApplicationLibrary}"
-
-
-__dispatch "${@}"
