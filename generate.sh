@@ -1,5 +1,4 @@
 #!/bin/bash
-echo $0
 #export SCRIPTPATH=$(realpath $0); SCRIPTPATH=${SCRIPTPATH%/*}
 export PROJECTDIR="./build"
 
