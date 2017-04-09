@@ -1616,11 +1616,26 @@ function __Echo_Blue()
     echo $(__Color_Text "$1" "34")
 }
 
+function __Echo_Yellow_On_Red()
+{
+    echo $(__Color_Text "$1" "1;33;41")
+}
+
+function __Echo_White_On_Red()
+{
+    echo $(__Color_Text "$1" "1;37;41")
+}
+
+function __Echo_White_On_Magenta()
+{
+    echo $(__Color_Text "$1" "1;37;45")
+}
+
 function __Echo_Normal()
 {
     echo ${1}
-
 }
+
 
 function __SelectExample()
 {
@@ -1698,5 +1713,433 @@ function __SelectExample2
         export __ChoiceExit=1;
         __msg debug "export __ChoiceExit=1"
     fi
+}
+
+# Group: Array
+# ----------------------------------------------------#
+
+## @fn __array_append()
+## @ingroup array
+## @brief Internal use.
+## @private
+## @param array Array name.
+## @param item Item to append.
+function __array_append() {
+    echo -n 'eval '
+    echo -n "$1" # array name
+    echo -n '=( "${'
+    echo -n "$1"
+    echo -n '[@]}" "'
+    echo -n "$2" # item to append
+    echo -n '" )'
+}
+
+## @fn __array_append_first()
+## @ingroup array
+## @brief Internal use.
+## @private
+## @param array Array name.
+## @param item Item to append.
+function __array_append_first() {
+    echo -n 'eval '
+    echo -n "$1" # array name
+    echo -n '=( '
+    echo -n "$2" # item to append
+    echo -n ' )'
+}
+
+## @fn __array_len()
+## @ingroup array
+## @brief Internal use.
+## @private
+## @param variable Variable name.
+## @param array Array name.
+function __array_len() {
+    echo -n 'eval local '
+    echo -n "$1" # variable name
+    echo -n '=${#'
+    echo -n "$2" # array name
+    echo -n '[@]}'
+}
+
+## @fn array_append()
+## @ingroup array
+## @brief Appends one or more items to an array.
+## @details If the array does not exist, this function will create it.
+## @param array Array to operate on.
+function array_append() {
+    local array=$1; shift 1
+
+    $(__array_len len $array)
+
+    if (( len == 0 )); then
+        $(__array_append_first $array "$1" )
+        shift 1
+    fi
+
+    local i
+    for i in "$@"; do
+        $(__array_append $array "$i")
+    done
+}
+
+## @fn array_size()
+## @ingroup array
+## @brief Returns the size of an array.
+## @param array Array to operate on.
+## @return Size of the array given as parameter.
+function array_size() {
+    $(__array_len size $1)
+    echo "$size"
+}
+
+## @fn array_print()
+## @ingroup array
+## @brief Prints the content of an array.
+## @param array Array to operate on.
+## @return Content of the array given as parameter.
+function array_print() {
+    eval "printf '%s\n' \"\${$1[@]}\""
+}
+
+# Group: Message
+# ----------------------------------------------------#
+
+## @fn msg()
+## @ingroup message
+## @brief Similar to the 'echo' function but with extra features.
+## @details This function basically replaces the 'echo' function in bash scripts.
+## The added functionalities over 'echo' are logging and using colors.
+## @param message Message to display.
+## @param color Text color.
+msg() {
+    MESSAGE="$1"
+    COLOR="$2"
+
+    COLOR=${COLOR:-'NORMAL'}
+    MESSAGE=${MESSAGE:-'-- no message received --'}
+
+    case $COLOR in 
+        RED)
+            __Echo_Red "$MESSAGE"
+            ;;
+        GREEN)
+            __Echo_Green "$MESSAGE"
+            ;;
+        YELLOW)
+            __Echo_Yellow "$MESSAGE"
+            ;;
+        BLUE)
+            __Echo_Blue "$MESSAGE"
+            ;;
+        CYAN)
+            __Echo_Normal "$MESSAGE"
+            ;;
+
+        *)
+            __Echo_Normal "$MESSAGE"
+            ;;
+    esac
+}
+
+## @fn msg_status()
+## @ingroup message
+## @brief Displays a message with its status at the end of the line.
+## @param message Message to display.
+## @param status Message status.
+msg_status() {
+    MESSAGE="$1"
+    STATUS="$2"
+
+    msg "$MESSAGE"
+    display_status "$STATUS"
+}
+
+## @fn msg_emergency()
+## @ingroup message
+## @brief Displays a message with the 'emergency' status.
+## @param message Message to display.
+msg_emergency() {
+    MESSAGE="$1"
+    STATUS="EMERGENCY"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_alert()
+## @ingroup message
+## @brief Displays a message with the 'alert' status.
+## @param message Message to display.
+msg_alert() {
+    MESSAGE="$1"
+    STATUS="ALERT"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_critical()
+## @ingroup message
+## @brief Displays a message with the 'critical' status.
+## @param message Message to display.
+msg_critical() {
+    MESSAGE="$1"
+    STATUS="CRITICAL"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_error()
+## @ingroup message
+## @brief Displays a message with the 'error' status.
+## @param message Message to display.
+msg_error() {
+    MESSAGE="$1"
+    STATUS="ERROR"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_warning()
+## @ingroup message
+## @brief Displays a message with the 'warning' status.
+## @param message Message to display.
+msg_warning() {
+    MESSAGE="$1"
+    STATUS="WARNING"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_notice()
+## @ingroup message
+## @brief Displays a message with the 'notice' status.
+## @param message Message to display.
+msg_notice() {
+    MESSAGE="$1"
+    STATUS="NOTICE"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_info()
+## @ingroup message
+## @brief Displays a message with the 'info' status.
+## @param message Message to display.
+msg_info() {
+    MESSAGE="$1"
+    STATUS="INFO"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_debug()
+## @ingroup message
+## @brief Displays a message with the 'debug' status.
+## @param message Message to display.
+msg_debug() {
+    MESSAGE="$1"
+    STATUS="DEBUG"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_ok()
+## @ingroup message
+## @brief Displays a message with the 'ok' status.
+## @param message Message to display.
+msg_ok() {
+    MESSAGE="$1"
+    STATUS="OK"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_not_ok()
+## @ingroup message
+## @brief Displays a message with the 'not ok' status.
+## @param message Message to display.
+msg_not_ok() {
+    MESSAGE="$1"
+    STATUS="NOT_OK"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_failed()
+## @ingroup message
+## @brief Displays a message with the 'failed' status.
+## @param message Message to display.
+msg_failed() {
+    MESSAGE="$1"
+    STATUS="FAILED"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_success()
+## @ingroup message
+## @brief Displays a message with the 'success' status.
+## @param message Message to display.
+msg_success() {
+    MESSAGE="$1"
+    STATUS="SUCCESS"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn msg_passed()
+## @ingroup message
+## @brief Displays a message with the 'passed' status.
+## @param message Message to display.
+msg_passed() {
+    MESSAGE="$1"
+    STATUS="PASSED"
+    msg_status "$MESSAGE" "$STATUS"
+}
+
+## @fn __raw_status()
+## @ingroup message
+## @brief Internal use.
+## @private
+## @details This function just positions the cursor one row
+## up and to the right. It then prints the message to display
+## with the specified color. It is used for displaying colored
+## status messages on the right side of the screen.
+## @param status Message status.
+## @param color Message color.
+__raw_status() {
+    STATUS="$1"
+    case $COLOR in 
+        RED)
+            COLOR="tput setaf 1"
+            ;;
+        GREEN)
+            COLOR="tput setaf 2"
+            ;;
+        YELLOW)
+            COLOR="tput setaf 3"
+            ;;
+        BLUE)
+            COLOR="tput setaf 4"
+            ;;
+        MAGENTA)
+            COLOR="tput setaf 5"
+            ;;
+        CYAN)
+            COLOR="tput setaf 6"
+            ;;
+
+        *)
+            COLOR="tput setaf 0"
+            ;;
+    esac
+
+    position_cursor () {
+        let RES_COL=`tput cols`-12
+        tput cuf $RES_COL
+        tput cuu1
+    }
+
+    position_cursor
+    echo -n "["
+    tput sgr0
+    tput bold
+    ${COLOR}
+    echo -n "$STATUS"
+    tput sgr0
+    echo -n "]"
+    echo 
+}
+
+## @fn display_status()
+## @ingroup message
+## @brief Displays the specified message status on the right
+## side of the screen.
+## @param status Message status to display.
+display_status() {
+    STATUS="$1"
+
+    case $STATUS in
+        EMERGENCY )
+            STATUS="EMERGENCY"
+            COLOR="RED"
+            ;;
+        ALERT )
+            STATUS="  ALERT  "
+            COLOR="RED"
+            ;;
+        CRITICAL )
+            STATUS="CRITICAL "
+            COLOR="RED"
+            ;;
+        ERROR )
+            STATUS="  ERROR  "
+            COLOR="RED"
+            ;;
+        WARNING )
+            STATUS=" WARNING "
+            COLOR="YELLOW"
+            ;;
+        NOTICE )
+            STATUS=" NOTICE  "
+            COLOR="BLUE"
+            ;;
+        INFO )
+            STATUS="  INFO   "
+            COLOR="CYAN"
+            ;;
+        DEBUG )
+            STATUS="  DEBUG  "
+            COLOR="DEFAULT"
+            ;;
+        OK  )
+            STATUS="   OK    "
+            COLOR="GREEN"
+            ;;
+        NOT_OK)
+            STATUS=" NOT OK  "
+            COLOR="RED"
+            ;;
+        PASSED )
+            STATUS=" PASSED  "
+            COLOR="GREEN"
+            ;;
+        SUCCESS )
+            STATUS=" SUCCESS "
+            COLOR="GREEN"
+            ;;
+        FAILURE | FAILED )
+            STATUS=" FAILED  "
+            COLOR="RED"
+            ;;
+        *)
+            STATUS="UNDEFINED"
+            COLOR="YELLOW"
+    esac
+
+    __raw_status "$STATUS" "$COLOR"
+}
+
+# Group: Command
+# ----------------------------------------------------#
+
+## @fn cmd()
+## @ingroup command
+## @brief Executes a command and displays its status ('OK' or 'FAILED').
+## @param command Command to execute.
+function cmd() 
+{
+    COMMAND="$1"
+    SHOWRESULT="$2"
+    msg "Executing: $COMMAND"
+    RESULT=$(eval $COMMAND 2>&1)
+    ERROR="$?"
+
+    if [[ ${COMMAND:0:29} == ${COMMAND} ]];then
+        MSG="Command: ${COMMAND:0:29}"
+    else
+        MSG="Command: ${COMMAND:0:29}  ..."
+    fi
+
+    if [ "$ERROR" == "0" ]
+    then
+        msg_ok "$MSG"
+        if [[ ${SHOWRESULT:-0} -eq 1 ]]
+        then
+            echo  "$RESULT"
+        fi
+    else
+        msg_failed "$MSG"
+    fi
+
+    return "$ERROR"
 }
 
