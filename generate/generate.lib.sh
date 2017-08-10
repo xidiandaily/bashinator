@@ -227,6 +227,7 @@ function Generate_Onefile()
     Merge "$PROJECTDIR/$PROJECTNAME.sh"     "$PROJECTDIR/law.tmp.sh"
 
     if cat "$PROJECTDIR/law.tmp.sh" | sed 's/^__requireSource/##__requireSource/' > "$PROJECTDIR/${PROJECTNAME}.packet.sh";then
+        cmd "dos2unix ${PROJECTDIR}/${PROJECTNAME}.packet.sh" 1
         __Echo_Green "rename $PROJECTDIR/law.tmp.sh $PROJECTDIR/${PROJECTNAME}.packet.sh Success!"
     fi
     if rm -f "$PROJECTDIR/law.tmp.sh" ;then

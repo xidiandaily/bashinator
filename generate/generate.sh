@@ -52,11 +52,11 @@ export __BashinatorLibrary="${__BashinatorLibrary:-${__ScriptPath}/bashinator.li
 #export __BashinatorLibrary="${__ScriptPath}/bashinator.lib.0.sh" # bashinator API v0
 
 ## include required source files
-if ! source "${__BashinatorConfig}"; then
+if [[ -f ${__BashinatorConfig} ]] && ! source "${__BashinatorConfig}"; then
     echo "!!! FATAL: failed to source bashinator config '${__BashinatorConfig}'" 1>&2
     exit 2
 fi
-if ! source "${__BashinatorLibrary}"; then
+if [[ -f ${__BashinatorLibrary} ]] && ! source "${__BashinatorLibrary}"; then
     echo "!!! FATAL: failed to source bashinator library '${__BashinatorLibrary}'" 1>&2
     exit 2
 fi
