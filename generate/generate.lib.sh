@@ -76,7 +76,7 @@ function __main() {
         exit
     fi
 
-    export SourceBashinatorPath="/data/CodeRepo/bashinator/bashinator/"
+    export SourceBashinatorPath="./"
     export BUILDDIR="./build"
     export PROJECTNAME="$1"
     export PROJECTDIR="./build/${PROJECTNAME}"
