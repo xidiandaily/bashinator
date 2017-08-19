@@ -1,5 +1,5 @@
 #!/bin/bash
-## =========Merge file: ./build/generate/bashinator.cfg.sh =========
+## =========Merge file: .//bashinator.cfg.sh =========
 ## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
 ##
 ## bashinator config for bashinator example application
@@ -211,7 +211,7 @@ export __MailEmerg=0   # default: 1
 #export __MailEnvelopeFrom="${USER}@${__ScriptHost}"
 #export __MailRecipient="${USER}@${__ScriptHost}"
 #export __MailSubject="Messages from ${__ScriptFile} running on ${__ScriptHost}"
-## =========Merge file: ./build/generate/bashinator.lib.0.sh =========
+## =========Merge file: .//bashinator.lib.0.sh =========
 ## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
 ##
 ## bashinator shell script framework library
@@ -2357,7 +2357,7 @@ function cmd()
     return "$ERROR"
 }
 
-## =========Merge file: ./build/generate/generate.lib.sh =========
+## =========Merge file: .//generate.lib.sh =========
 ## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
 ##
 ## application library for bashinator example application
@@ -2384,19 +2384,27 @@ function cmd()
 function __init() {
 
 	## -- BEGIN YOUR OWN APPLICATION INITIALIZATION CODE HERE --
-
 	## parse command line options
-	while getopts 'xcp' opt; do
+	while getopts 'hxc:p:n:' opt; do
 		case "${opt}" in
+            h)
+                Help
+                ;;
             x)
-                EnableDebugMode;
+                EnableDebugMode
                 __Echo_Green "EnableDebugMode"
                 ;;
 			c)
                 export __CleanMode=1
+                export __OPT_PROJECTDIR=${OPTARG}
 				;;
 			p)
                 export __OnefileMode=1
+                export __OPT_PROJECTDIR=${OPTARG}
+				;;
+			n)
+                export __CreateProjectMode=1
+                export __OPT_PROJECTNAME=${OPTARG}
 				;;
 			## option without a required argument
 			:)
@@ -2429,30 +2437,43 @@ function __init() {
 
 function __main() {
 	## -- BEGIN YOUR OWN APPLICATION MAIN CODE HERE --
-    set -- $args
-    if [[ -z $1 ]];then
-        __print debug "projectname empty $1"
+    if [[ -z ${__OnefileMode} ]] && [[ -z ${__CreateProjectMode} ]] && [[ -z ${__CleanMode} ]];then
         Help
         exit
     fi
 
-    export SourceBashinatorPath="./"
-    export BUILDDIR="./build"
-    export PROJECTNAME="$1"
-    export PROJECTDIR="./build/${PROJECTNAME}"
+    if [[ ${__CreateProjectMode} -eq 1 ]];then
+        if [[ -z ${__OPT_PROJECTNAME} ]];then
+            __Echo_Green "Please Input ProjectName"
+            exit
+        fi
 
-    if [[ ${__CleanMode:-0} -eq 1 ]];then
-        Generate_Clean
-        exit
+        if [[ $(uname) == "Darwin" ]];then
+            export SourceBashinatorPath="/data/CodeRepo/bashinator/bashinator"
+        else
+            export SourceBashinatorPath="/data/CodeRepo/bashinator/bashinator"
+        fi
+
+        if [[ ! -d ${SourceBashinatorPath} ]];then
+            __Echo_Red "SourcePath(${SourceBashinatorPath}) Not Found"
+            exit
+        fi
+
+        export PROJECTNAME="${__OPT_PROJECTNAME}"
+        export PROJECTDIR="${SourceBashinatorPath}/build/${PROJECTNAME}"
+
+        Generate_Normal 
+        __Echo_Green "Generate Sucess :${PROJECTDIR}"
     fi
 
     if [[ ${__OnefileMode:-0} -eq 1 ]];then
-        Generate_Onefile
-        exit
+        CheckIsBashInatorProj || Generate_Onefile
     fi
 
-    Generate_Normal 
-    __Echo_Green "Generate Sucess :${PROJECTDIR}"
+    if [[ ${__CleanMode:-0} -eq 1 ]];then
+        CheckIsBashInatorProj || Generate_Clean
+    fi
+
 	## -- END YOUR OWN APPLICATION MAIN CODE HERE --
 }
 
@@ -2482,17 +2503,22 @@ function Help()
     echo "Usage: ${__ScriptFile}  [OPTION...] projectname"
     echo ""
     echo " [OPTION]"
-    echo "     -x debug mode"
-    echo "     -c Clean Exist Project"
-    echo "     -p Packet Exist Project,all in one file"
+    echo "     -x             = debug mode"
+    echo "     -c path        = Clean Exist Project"
+    echo "     -p path        = Packet Exist Project,all in one file"
+    echo "     -n projectname = Create NewProject "
     echo ""
     echo " [EXAMPLE]"
-    echo "   ${__ScriptFile} test  ;generate 'test' project"
-    echo "   ${__ScriptFile} -c test  ;clean 'test' project whithout note"
-    echo "   ${__ScriptFile} -p test  ;Packet 'test'"
+    echo "   ${__ScriptFile} -c ./      = clean current project"
+    echo "   ${__ScriptFile} -p ./      = Packet current project'"
+    echo "   ${__ScriptFile} -n test    = generate 'test' project"
+    echo "   ${__ScriptFile} -x -c ./   = debugmode;clean current project"
+    echo "   ${__ScriptFile} -x -p ./   = debugmode;Packet current project'"
+    echo "   ${__ScriptFile} -x -n test = debugmode;generate 'test' project"
     echo ""
     echo " [AUTHOR]"
-    echo "   lawrencechi 2017.03.25"
+    echo "   v2.0:lawrencechi 2017.08.19"
+    echo "   v1.0:lawrencechi 2017.03.25"
 }
 
 ##
@@ -2532,8 +2558,36 @@ function Merge()
     __Echo_Green "Merget $1 $2 Successed"
 }
 
+function CheckIsBashInatorProj()
+{
+    #use PROJECTNAME
+    #use PROJECTDIR
+    export PROJECTDIR="${__OPT_PROJECTDIR}"
+    if [[ -f "${PROJECTDIR}/bashinator.lib.0.sh" ]] && [[ -f "${PROJECTDIR}/bashinator.cfg.sh" ]];then
+        projectname=`ls |grep -v bashinator.cfg.sh | grep '.lib.sh' |head -n 1`;
+        projectname=${projectname/.lib.sh/}
+        if [[ -f "${PROJECTDIR}/${projectname}.cfg.sh" ]] && [[ -f "${PROJECTDIR}/${projectname}.sh" ]];then
+            export PROJECTNAME="${projectname}"
+        fi
+    fi
+
+    if [[ -z ${PROJECTNAME} ]];then
+        __Echo_Red "may be not a bashinator project?"
+        read -p 
+        Help
+        return 0
+    fi
+    read -p "ProjectName:${PROJECTNAME} [y/N]?" choice
+    if [[ ${choice} == "n" ]] || [[ ${choice} == "N" ]];then
+        return 0
+    fi
+    return 1
+}
+
 function Generate_Normal
 {
+    export BUILDDIR="${SourceBashinatorPath}/build"
+
     if [[ ! -d $BUILDDIR ]];then
         if ! mkdir "$BUILDDIR" >> "${_L:-/dev/null}" 2>&1;then
             __Echo_Green "Create Build Directory:${BUILDDIR} Done!"
@@ -2560,15 +2614,15 @@ function Generate_Clean()
 {
     if [[ ! -d $PROJECTDIR ]];then
         __Echo_Red "'${PROJECTDIR}' Not exits, Packet Failed!"
-        exit 1
+        return
     fi
 
-    Clean "$PROJECTDIR/bashinator.lib.0.sh"
-    Clean "$PROJECTDIR/$PROJECTNAME.sh"
-    Clean "$PROJECTDIR/$PROJECTNAME.lib.sh"
-    Clean "$PROJECTDIR/$PROJECTNAME.cfg.sh"
-    Clean "$PROJECTDIR/bashinator.cfg.sh"
+    if [[ ! -f "${PROJECTDIR}/${PROJECTNAME}.packet.sh" ]];then
+        __Echo_Red "${PROJECTNAME} Packet File is not found"
+        return
+    fi
 
+    Clean "${PROJECTDIR}/${PROJECTNAME}.packet.sh"
     __Echo_Green "Generate_Clean"
 }
 
@@ -2596,7 +2650,7 @@ function Generate_Onefile()
     __Echo_Green "Generate_Onefile Sucess,packet file:${PROJECTNAME}.packet.sh"
 }
 
-## =========Merge file: ./build/generate/generate.cfg.sh =========
+## =========Merge file: .//generate.cfg.sh =========
 ## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
 ##
 ## application config for bashinator example application
@@ -2612,7 +2666,7 @@ function Generate_Onefile()
 ##
 
 
-## =========Merge file: ./build/generate/generate.sh =========
+## =========Merge file: .//generate.sh =========
 #!/bin/bash
 ## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
 ##
