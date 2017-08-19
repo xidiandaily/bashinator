@@ -56,7 +56,7 @@ if [[ -f ${__BashinatorConfig} ]] && ! source "${__BashinatorConfig}"; then
     echo "!!! FATAL: failed to source bashinator config '${__BashinatorConfig}'" 1>&2
     exit 2
 fi
-if [[ -f ${__BashinatorConfig} ]] && ! source "${__BashinatorLibrary}"; then
+if [[ -f ${__BashinatorLibrary} ]] && ! source "${__BashinatorLibrary}"; then
     echo "!!! FATAL: failed to source bashinator library '${__BashinatorLibrary}'" 1>&2
     exit 2
 fi

@@ -1,3 +1,217 @@
+#!/bin/bash
+## =========Merge file: .//bashinator.cfg.sh =========
+## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
+##
+## bashinator config for bashinator example application
+##
+## Created by Wolfram Schlich <wschlich@gentoo.org>
+## Licensed under the GNU GPLv3
+## Web: http://www.bashinator.org/
+## Code: https://github.com/wschlich/bashinator/
+##
+
+##
+## bashinator settings
+##
+
+## -- bashinator basic settings --
+
+## log stdout and/or stderr of subcommands to a file.
+## the output of all subcommands need to be manually redirected to the logfile
+## contained in the variable _L which is automatically defined by bashinator.
+##
+## examples:
+##
+## - redirect stdout + stderr to the logfile:
+##   mkdir /foo &> "${_L}"
+##
+## - redirect only stderr to the logfile, so stdout can be processed as usual:
+##   grep localhost /etc/hosts 2> "${_L}"
+##
+export __ScriptSubCommandLog=0 # default: 0
+## directory to create logfile in
+export __ScriptSubCommandLogDir="/tmp" # default: /var/log
+
+## check for a lockfile on startup and error out if it exists, create it otherwise
+export __ScriptLock=0 # default: 0
+## directory to create lockfile in
+export __ScriptLockDir="/tmp" # default: /var/lock
+
+## use a safe PATH environment variable instead
+## of the one supplied by the calling environment:
+## - when running as non-root user: /bin:/usr/bin
+## - when running as super user: /sbin:/usr/sbin:/bin:/usr/bin
+#export __ScriptUseSafePathEnv=0 # default: 1
+
+## set the umask
+export __ScriptUmask=022 # default: 077
+
+## generate a stack trace when the __die() function is called (fatal errors)
+## affects printing, mailing and logging!
+#export __ScriptGenerateStackTrace=0 # default: 1
+
+## -- bashinator message handling settings --
+
+## enable quiet operation: nothing is printed on stdout/stderr,
+## messages are only logged and/or mailed (if enabled).
+## overrides __Print* variables!
+## it should be possible to enable this by passing -q
+## as an argument to your own application script.
+#export __MsgQuiet=1 # default: 0
+
+## timestamp format for the message functions,
+## will be passed to date(1).
+## default: "%Y-%m-%d %H:%M:%S %:Z"
+export __MsgTimestampFormat="[%Y-%m-%d %H:%M:%S %Z]" # with brackets
+#export __MsgTimestampFormat="[%Y-%m-%d %H:%M:%S.%N %Z]" # with brackets and nanoseconds
+
+## -- bashinator message printing settings --
+
+## enable/disable printing of messages by severity
+export __PrintDebug=0   # default: 0
+export __PrintInfo=0    # default: 1
+export __PrintNotice=0  # default: 1
+export __PrintWarning=0 # default: 1
+export __PrintErr=0     # default: 1
+export __PrintCrit=0    # default: 1
+export __PrintAlert=0   # default: 1
+export __PrintEmerg=0   # default: 1
+
+## enable/disable prefixing the messages to be printed with...
+##
+## ...their script name + pid
+#export __PrintPrefixScriptNamePid=0 # default: 1
+##
+## ...their timestamp
+#export __PrintPrefixTimestamp=0 # default: 1
+##
+## ...their severity
+#export __PrintPrefixSeverity=0 # default: 1
+##
+## ...their source (file name, line number and function name)
+#export __PrintPrefixSource=0 # default: 1
+
+## print severity prefixes
+#export __PrintPrefixSeverity7=">>> [____DEBUG]" # LOG_DEBUG
+#export __PrintPrefixSeverity6=">>> [_____INFO]" # LOG_INFO
+#export __PrintPrefixSeverity5=">>> [___NOTICE]" # LOG_NOTICE
+#export __PrintPrefixSeverity4="!!! [__WARNING]" # LOG_WARNING
+#export __PrintPrefixSeverity3="!!! [____ERROR]" # LOG_ERR
+#export __PrintPrefixSeverity2="!!! [_CRITICAL]" # LOG_CRIT
+#export __PrintPrefixSeverity1="!!! [____ALERT]" # LOG_ALERT
+#export __PrintPrefixSeverity0="!!! [EMERGENCY]" # LOG_EMERG
+
+## print severity colors (for the entire message, not just the prefix)
+#export __PrintColorSeverity7="1;34"    # LOG_DEBUG:   blue on default
+#export __PrintColorSeverity6="1;36"    # LOG_INFO:    cyan on default
+#export __PrintColorSeverity5="1;32"    # LOG_NOTICE:  green on default
+#export __PrintColorSeverity4="1;33"    # LOG_WARNING: yellow on default
+#export __PrintColorSeverity3="1;31"    # LOG_ERR:     red on default
+#export __PrintColorSeverity2="1;37;41" # LOG_CRIT:    white on red
+#export __PrintColorSeverity1="1;33;41" # LOG_ALERT:   yellow on red
+#export __PrintColorSeverity0="1;37;45" # LOG_EMERG:   white on magenta
+
+## -- bashinator message logging settings --
+
+## enable/disable logging of messages by severity
+export __LogDebug=0   # default: 0
+export __LogInfo=0    # default: 1
+export __LogNotice=0  # default: 1
+export __LogWarning=0 # default: 1
+export __LogErr=0     # default: 1
+export __LogCrit=0    # default: 1
+export __LogAlert=0   # default: 1
+export __LogEmerg=0   # default: 1
+
+## enable/disable prefixing the messages to be logged with...
+##
+## ...their script name + pid (ignored for syslog log target)
+#export __LogPrefixScriptNamePid=0 # default: 1
+##
+## ...their timestamp (ignored for syslog log target)
+#export __LogPrefixTimestamp=0 # default: 1
+##
+## ...their severity (ignored for syslog log target)
+#export __LogPrefixSeverity=0 # default: 1
+##
+## ...their source (file name, line number and function name)
+#export __LogPrefixSource=0 # default: 1
+
+## log severity prefixes
+#export __LogPrefixSeverity7=">>> [____DEBUG]" # LOG_DEBUG
+#export __LogPrefixSeverity6=">>> [_____INFO]" # LOG_INFO
+#export __LogPrefixSeverity5=">>> [___NOTICE]" # LOG_NOTICE
+#export __LogPrefixSeverity4="!!! [__WARNING]" # LOG_WARNING
+#export __LogPrefixSeverity3="!!! [____ERROR]" # LOG_ERR
+#export __LogPrefixSeverity2="!!! [_CRITICAL]" # LOG_CRIT
+#export __LogPrefixSeverity1="!!! [____ALERT]" # LOG_ALERT
+#export __LogPrefixSeverity0="!!! [EMERGENCY]" # LOG_EMERG
+
+## log target configuration
+## supported targets (any comma separated combination of):
+## - "syslog:FACILITY"
+## - "file:TARGET-FILE"
+## - "file:TARGET-FILE:WRITE-MODE" (default WRITE-MODE: overwrite)
+## default: "syslog:user"
+#export __LogTarget="syslog:user"
+#export __LogTarget="file:/var/log/${__ScriptName}.log"
+#export __LogTarget="file:/var/log/${__ScriptName}.log:append"
+#export __LogTarget="file:/var/log/${__ScriptName}.log:overwrite"
+#export __LogTarget="file:/var/log/${__ScriptName}.log:append,syslog:user"
+#export __LogTarget="file:/var/log/${__ScriptName}.log:overwrite,syslog:user"
+#export __LogTarget="file:/var/log/${__ScriptName}.log:append,file:/var/log/${__ScriptName}-current.log:overwrite"
+#export __LogTarget="file:/var/log/${__ScriptName}.$(date +"%Y%m%d-%H%M%S").log"
+export __LogTarget="file:${__ScriptPath}/${__ScriptName}.log.$(date +"%Y%m%d"):append"
+
+## -- bashinator message mailing settings --
+
+## enable/disable mailing of messages by severity
+export __MailDebug=0   # default: 0
+export __MailInfo=0    # default: 1
+export __MailNotice=0  # default: 1
+export __MailWarning=0 # default: 1
+export __MailErr=0     # default: 1
+export __MailCrit=0    # default: 1
+export __MailAlert=0   # default: 1
+export __MailEmerg=0   # default: 1
+
+## enable/disable prefixing the messages to be mailed with...
+##
+## ...their script name + pid
+#export __MailPrefixScriptNamePid=1 # default: 0
+##
+## ...their timestamp
+#export __MailPrefixTimestamp=0 # default: 1
+##
+## ...their severity
+#export __MailPrefixSeverity=0 # default: 1
+##
+## ...their source (file name, line number and function name)
+#export __MailPrefixSource=0 # default: 1
+
+## mail severity prefixes
+#export __MailPrefixSeverity7="[____DEBUG]" # LOG_DEBUG
+#export __MailPrefixSeverity6="[_____INFO]" # LOG_INFO
+#export __MailPrefixSeverity5="[___NOTICE]" # LOG_NOTICE
+#export __MailPrefixSeverity4="[__WARNING]" # LOG_WARNING
+#export __MailPrefixSeverity3="[____ERROR]" # LOG_ERR
+#export __MailPrefixSeverity2="[_CRITICAL]" # LOG_CRIT
+#export __MailPrefixSeverity1="[____ALERT]" # LOG_ALERT
+#export __MailPrefixSeverity0="[EMERGENCY]" # LOG_EMERG
+
+## enable/disable appending the script subcommand log to the mail (if enabled)
+#export __MailAppendScriptSubCommandLog=0 # default: 1
+
+## mail data configuration
+## default __MailFrom:         "${USER} <${USER}@${__ScriptHost}>"
+## default __MailEnvelopeFrom: "${USER}@${__ScriptHost}"
+## default __MailRecipient:    "${USER}@${__ScriptHost}"
+## default __MailSubject:      "Messages from ${__ScriptFile} running on ${__ScriptHost}"
+#export __MailFrom="${USER} <${USER}@${__ScriptHost}>"
+#export __MailEnvelopeFrom="${USER}@${__ScriptHost}"
+#export __MailRecipient="${USER}@${__ScriptHost}"
+#export __MailSubject="Messages from ${__ScriptFile} running on ${__ScriptHost}"
+## =========Merge file: .//bashinator.lib.0.sh =========
 ## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
 ##
 ## bashinator shell script framework library
@@ -2143,3 +2357,420 @@ function cmd()
     return "$ERROR"
 }
 
+## =========Merge file: .//generate.lib.sh =========
+## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
+##
+## application library for bashinator example application
+##
+## Created by Wolfram Schlich <wschlich@gentoo.org>
+## Licensed under the GNU GPLv3
+## Web: http://www.bashinator.org/
+## Code: https://github.com/wschlich/bashinator/
+##
+
+##
+## REQUIRED PROGRAMS
+## =================
+## - rm
+## - mkdir
+## - ls
+##
+
+##
+## application initialization function
+## (command line argument parsing and validation etc.)
+##
+
+function __init() {
+
+	## -- BEGIN YOUR OWN APPLICATION INITIALIZATION CODE HERE --
+	## parse command line options
+	while getopts 'hxc:p:n:' opt; do
+		case "${opt}" in
+            h)
+                Help
+                ;;
+            x)
+                EnableDebugMode
+                __Echo_Green "EnableDebugMode"
+                ;;
+			c)
+                export __CleanMode=1
+                export __OPT_PROJECTDIR=${OPTARG}
+				;;
+			p)
+                export __OnefileMode=1
+                export __OPT_PROJECTDIR=${OPTARG}
+				;;
+			n)
+                export __CreateProjectMode=1
+                export __OPT_PROJECTNAME=${OPTARG}
+				;;
+			## option without a required argument
+			:)
+				__die 2 "option -${OPTARG} requires an argument" # TODO FIXME: switch to __msg err
+				;;
+			## unknown option
+			\?)
+				__die 2 "unknown option -${OPTARG}" # TODO FIXME: switch to __msg err
+				;;
+			## this should never happen
+			*)
+				__die 2 "there's an error in the matrix!" # TODO FIXME: switch to __msg err
+				;;
+		esac
+		__msg debug "command line argument: -${opt}${OPTARG:+ '${OPTARG}'}"
+	done
+	## shift off options + arguments
+	let OPTIND--; shift ${OPTIND}; unset OPTIND
+	args="${@}"
+	set -- 
+
+	return 0 # success
+
+	## -- END YOUR OWN APPLICATION INITIALIZATION CODE HERE --
+}
+
+##
+## application main function
+##
+
+function __main() {
+	## -- BEGIN YOUR OWN APPLICATION MAIN CODE HERE --
+    if [[ -z ${__OnefileMode} ]] && [[ -z ${__CreateProjectMode} ]] && [[ -z ${__CleanMode} ]];then
+        Help
+        exit
+    fi
+
+    if [[ ${__CreateProjectMode} -eq 1 ]];then
+        if [[ -z ${__OPT_PROJECTNAME} ]];then
+            __Echo_Green "Please Input ProjectName"
+            exit
+        fi
+
+        if [[ $(uname) == "Darwin" ]];then
+            export SourceBashinatorPath="/data/CodeRepo/bashinator/bashinator"
+        else
+            export SourceBashinatorPath="/data/CodeRepo/bashinator/bashinator"
+        fi
+
+        if [[ ! -d ${SourceBashinatorPath} ]];then
+            __Echo_Red "SourcePath(${SourceBashinatorPath}) Not Found"
+            exit
+        fi
+
+        export PROJECTNAME="${__OPT_PROJECTNAME}"
+        export PROJECTDIR="${SourceBashinatorPath}/build/${PROJECTNAME}"
+
+        Generate_Normal 
+        __Echo_Green "Generate Sucess :${PROJECTDIR}"
+    fi
+
+    if [[ ${__OnefileMode:-0} -eq 1 ]];then
+        CheckIsBashInatorProj || Generate_Onefile
+    fi
+
+    if [[ ${__CleanMode:-0} -eq 1 ]];then
+        CheckIsBashInatorProj || Generate_Clean
+    fi
+
+	## -- END YOUR OWN APPLICATION MAIN CODE HERE --
+}
+
+function EnableDebugMode()
+{
+    export __LogDebug=1     # default: 0
+    export __LogInfo=1      # default: 1
+    export __LogNotice=1    # default: 1
+    export __LogWarning=1   # default: 1
+    export __LogErr=1       # default: 1
+    export __LogCrit=1      # default: 1
+    export __LogAlert=1     # default: 1
+    export __LogEmerg=1     # default: 1
+
+    export __PrintDebug=1   # default: 0
+    export __PrintInfo=1    # default: 1
+    export __PrintNotice=1  # default: 1
+    export __PrintWarning=1 # default: 1
+    export __PrintErr=1     # default: 1
+    export __PrintCrit=1    # default: 1
+    export __PrintAlert=1   # default: 1
+    export __PrintEmerg=1   # default: 1
+}
+
+function Help()
+{
+    echo "Usage: ${__ScriptFile}  [OPTION...] projectname"
+    echo ""
+    echo " [OPTION]"
+    echo "     -x             = debug mode"
+    echo "     -c path        = Clean Exist Project"
+    echo "     -p path        = Packet Exist Project,all in one file"
+    echo "     -n projectname = Create NewProject "
+    echo ""
+    echo " [EXAMPLE]"
+    echo "   ${__ScriptFile} -c ./      = clean current project"
+    echo "   ${__ScriptFile} -p ./      = Packet current project'"
+    echo "   ${__ScriptFile} -n test    = generate 'test' project"
+    echo "   ${__ScriptFile} -x -c ./   = debugmode;clean current project"
+    echo "   ${__ScriptFile} -x -p ./   = debugmode;Packet current project'"
+    echo "   ${__ScriptFile} -x -n test = debugmode;generate 'test' project"
+    echo ""
+    echo " [AUTHOR]"
+    echo "   v2.0:lawrencechi 2017.08.19"
+    echo "   v1.0:lawrencechi 2017.03.25"
+}
+
+##
+## application worker functions
+##
+
+function Copy()
+{
+    if cp "$1" "$2" >>"${_L:-/dev/null}" 2>&1;then
+        __Echo_Green "cp $1 to $2 Done!"
+    else
+        __Echo_Red "cp $1 to $2 Faied!"
+        exit
+    fi
+}
+
+function Clean()
+{
+    if ! cat "$1" | grep -v '^##' > "${1}.clean";then
+        __Echo_Red "clean $1 Failed!"
+        exit
+    fi
+
+    if ! mv "${1}.clean" "$1";then
+        __Echo_Red "clean $1 Failth!"
+        exit
+    fi
+    __Echo_Green "clean $1 Done!"
+}
+
+function Merge()
+{
+    echo "## =========Merge file: ${1} =========" >> "$2"
+    if ! cat "$1" >>"$2";then
+        __Echo_Red "Merget $1 $2 Failed"
+    fi
+    __Echo_Green "Merget $1 $2 Successed"
+}
+
+function CheckIsBashInatorProj()
+{
+    #use PROJECTNAME
+    #use PROJECTDIR
+    export PROJECTDIR="${__OPT_PROJECTDIR}"
+    if [[ -f "${PROJECTDIR}/bashinator.lib.0.sh" ]] && [[ -f "${PROJECTDIR}/bashinator.cfg.sh" ]];then
+        projectname=`ls |grep -v bashinator.cfg.sh | grep '.lib.sh' |head -n 1`;
+        projectname=${projectname/.lib.sh/}
+        if [[ -f "${PROJECTDIR}/${projectname}.cfg.sh" ]] && [[ -f "${PROJECTDIR}/${projectname}.sh" ]];then
+            export PROJECTNAME="${projectname}"
+        fi
+    fi
+
+    if [[ -z ${PROJECTNAME} ]];then
+        __Echo_Red "may be not a bashinator project?"
+        read -p 
+        Help
+        return 0
+    fi
+    read -p "ProjectName:${PROJECTNAME} [y/N]?" choice
+    if [[ ${choice} == "n" ]] || [[ ${choice} == "N" ]];then
+        return 0
+    fi
+    return 1
+}
+
+function Generate_Normal
+{
+    export BUILDDIR="${SourceBashinatorPath}/build"
+
+    if [[ ! -d $BUILDDIR ]];then
+        if ! mkdir "$BUILDDIR" >> "${_L:-/dev/null}" 2>&1;then
+            __Echo_Green "Create Build Directory:${BUILDDIR} Done!"
+        fi
+    fi
+
+    if [[ -d $PROJECTDIR ]];then
+        __Echo_Red "'${PROJECTDIR}' exits, generate failed!"
+        exit 1
+    fi
+
+    if ! mkdir "$PROJECTDIR" >> "${_L:-/dev/null}" 2>&1;then
+        __Echo_Green "Create Project Directory:${path} Done!"
+    fi
+
+    Copy "${SourceBashinatorPath}/bashinator.lib.0.sh"       "$PROJECTDIR/bashinator.lib.0.sh"
+    Copy "${SourceBashinatorPath}/example/example.sh"        "$PROJECTDIR/$PROJECTNAME.sh"
+    Copy "${SourceBashinatorPath}/example/example.lib.sh"    "$PROJECTDIR/$PROJECTNAME.lib.sh"
+    Copy "${SourceBashinatorPath}/example/example.cfg.sh"    "$PROJECTDIR/$PROJECTNAME.cfg.sh"
+    Copy "${SourceBashinatorPath}/example/bashinator.cfg.sh" "$PROJECTDIR/bashinator.cfg.sh"
+}
+
+function Generate_Clean()
+{
+    if [[ ! -d $PROJECTDIR ]];then
+        __Echo_Red "'${PROJECTDIR}' Not exits, Packet Failed!"
+        return
+    fi
+
+    if [[ ! -f "${PROJECTDIR}/${PROJECTNAME}.packet.sh" ]];then
+        __Echo_Red "${PROJECTNAME} Packet File is not found"
+        return
+    fi
+
+    Clean "${PROJECTDIR}/${PROJECTNAME}.packet.sh"
+    __Echo_Green "Generate_Clean"
+}
+
+function Generate_Onefile()
+{
+    if [[ ! -d $PROJECTDIR ]];then
+        __Echo_Red "'${PROJECTDIR}' Not exits, Packet Failed!"
+        exit 1
+    fi
+
+    echo "#!/bin/bash" >  "$PROJECTDIR/law.tmp.sh"
+    Merge "$PROJECTDIR/bashinator.cfg.sh"   "$PROJECTDIR/law.tmp.sh"
+    Merge "$PROJECTDIR/bashinator.lib.0.sh" "$PROJECTDIR/law.tmp.sh"
+    Merge "$PROJECTDIR/$PROJECTNAME.lib.sh" "$PROJECTDIR/law.tmp.sh"
+    Merge "$PROJECTDIR/$PROJECTNAME.cfg.sh" "$PROJECTDIR/law.tmp.sh"
+    Merge "$PROJECTDIR/$PROJECTNAME.sh"     "$PROJECTDIR/law.tmp.sh"
+
+    if cat "$PROJECTDIR/law.tmp.sh" | sed 's/^__requireSource/##__requireSource/' > "$PROJECTDIR/${PROJECTNAME}.packet.sh";then
+        cmd "dos2unix ${PROJECTDIR}/${PROJECTNAME}.packet.sh" 1
+        __Echo_Green "rename $PROJECTDIR/law.tmp.sh $PROJECTDIR/${PROJECTNAME}.packet.sh Success!"
+    fi
+    if rm -f "$PROJECTDIR/law.tmp.sh" ;then
+        __Echo_Green "rm $PROJECTDIR/law.tmp.sh Sucessed"
+    fi
+    __Echo_Green "Generate_Onefile Sucess,packet file:${PROJECTNAME}.packet.sh"
+}
+
+## =========Merge file: .//generate.cfg.sh =========
+## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
+##
+## application config for bashinator example application
+##
+## Created by Wolfram Schlich <wschlich@gentoo.org>
+## Licensed under the GNU GPLv3
+## Web: http://www.bashinator.org/
+## Code: https://github.com/wschlich/bashinator/
+##
+
+##
+## application settings
+##
+
+
+## =========Merge file: .//generate.sh =========
+#!/bin/bash
+## vim:ts=4:sw=4:tw=200:nu:ai:nowrap:
+##
+## bashinator example application
+##
+## Created by Wolfram Schlich <wschlich@gentoo.org>
+## Licensed under the GNU GPLv3
+## Web: http://www.bashinator.org/
+## Code: https://github.com/wschlich/bashinator/
+##
+
+##
+## NOTES
+## =====
+## - you have to run 'bash -O extglob -O extdebug -n thisscriptfile' to test this script!
+## - if you want to test this script right away, use the following command:
+##   $ env __BashinatorConfig=bashinator.cfg.sh __BashinatorLibrary=../bashinator.lib.0.sh ApplicationConfig=example.cfg.sh ApplicationLibrary=example.lib.sh ./example.sh -a
+##
+
+##
+## bashinator basic variables
+##
+
+export __ScriptFile=${0##*/} # evaluates to "example.sh"
+export __ScriptName=${__ScriptFile%.sh} # evaluates to "example"
+export __ScriptPath=${0%/*}; __ScriptPath=${__ScriptPath%/} # evaluates to /path/to/example/example.sh
+export __ScriptHost=$(hostname -f) # evaluates to the current hostname, e.g. host.example.com
+
+##
+## bashinator library and config
+##
+
+## system installation of bashinator (and application):
+##
+## /etc/example/bashinator.cfg.sh
+## /usr/share/bashinator/bashinator.lib.0.sh
+##
+## accepting overrides using user-defined environment variables:
+export __BashinatorConfig="${__BashinatorConfig:-${__ScriptPath}/bashinator.cfg.sh}"
+export __BashinatorLibrary="${__BashinatorLibrary:-${__ScriptPath}/bashinator.lib.0.sh}" # APIv0
+##
+## not accepting overrides (for security reasons):
+#export __BashinatorConfig="/etc/${__ScriptName}/bashinator.cfg.sh"
+#export __BashinatorLibrary="/usr/share/bashinator/bashinator.lib.0.sh" # bashinator API v0
+
+## local installation of bashinator and application in dedicated script path:
+##
+## /path/to/example/bashinator.cfg.sh
+## /path/to/example/bashinator.lib.0.sh
+##
+#export __BashinatorConfig="${__ScriptPath}/bashinator.cfg.sh"
+#export __BashinatorLibrary="${__ScriptPath}/bashinator.lib.0.sh" # bashinator API v0
+
+## include required source files
+if [[ -f ${__BashinatorConfig} ]] && ! source "${__BashinatorConfig}"; then
+    echo "!!! FATAL: failed to source bashinator config '${__BashinatorConfig}'" 1>&2
+    exit 2
+fi
+if [[ -f ${__BashinatorLibrary} ]] && ! source "${__BashinatorLibrary}"; then
+    echo "!!! FATAL: failed to source bashinator library '${__BashinatorLibrary}'" 1>&2
+    exit 2
+fi
+
+##
+## boot bashinator:
+## - if configured, it can check for a minimum required bash version
+## - if configured, it can enforce a safe PATH
+## - if configured, it can enforce a specific umask
+## - it enables required bash settings (e.g. extglob, extdebug)
+##
+
+__boot
+
+##
+## application library and config
+##
+
+## system installation of application config and library
+##
+## /etc/example/example.cfg.sh
+## /usr/share/example/example.lib.sh
+##
+## accepting overrides using user-defined environment variables:
+export ApplicationConfig="${ApplicationConfig:-${__ScriptPath}/${__ScriptName}.cfg.sh}"
+export ApplicationLibrary="${ApplicationLibrary:-${__ScriptPath}/${__ScriptName}.lib.sh}"
+##
+## not accepting overrides (for security reasons)
+#export ApplicationConfig="/etc/${__ScriptName}/${__ScriptName}.cfg.sh"
+#export ApplicationLibrary="/usr/share/${__ScriptName}/${__ScriptName}.lib.sh"
+
+## local installation of application config and library in dedicated script path:
+##
+## /path/to/example/example.cfg.sh
+## /path/to/example/example.lib.sh
+##
+#export ApplicationConfig="${__ScriptPath}/${__ScriptName}.cfg.sh"
+#export ApplicationLibrary="${__ScriptPath}/${__ScriptName}.lib.sh"
+
+## include required source files (using bashinator functions with builtin error handling)
+##__requireSource "${ApplicationConfig}"
+##__requireSource "${ApplicationLibrary}"
+
+##
+## dispatch the application with all original command line arguments
+##
+
+__dispatch "${@}"

@@ -31,7 +31,7 @@ export __ScriptSubCommandLog=0 # default: 0
 export __ScriptSubCommandLogDir="/tmp" # default: /var/log
 
 ## check for a lockfile on startup and error out if it exists, create it otherwise
-export __ScriptLock=1 # default: 0
+export __ScriptLock=0 # default: 0
 ## directory to create lockfile in
 export __ScriptLockDir="/tmp" # default: /var/lock
 
@@ -66,14 +66,14 @@ export __MsgTimestampFormat="[%Y-%m-%d %H:%M:%S %Z]" # with brackets
 ## -- bashinator message printing settings --
 
 ## enable/disable printing of messages by severity
-export __PrintDebug=1   # default: 0
-#export __PrintInfo=0    # default: 1
-#export __PrintNotice=0  # default: 1
-#export __PrintWarning=0 # default: 1
-#export __PrintErr=0     # default: 1
-#export __PrintCrit=0    # default: 1
-#export __PrintAlert=0   # default: 1
-#export __PrintEmerg=0   # default: 1
+export __PrintDebug=0   # default: 0
+export __PrintInfo=0    # default: 1
+export __PrintNotice=0  # default: 1
+export __PrintWarning=0 # default: 1
+export __PrintErr=0     # default: 1
+export __PrintCrit=0    # default: 1
+export __PrintAlert=0   # default: 1
+export __PrintEmerg=0   # default: 1
 
 ## enable/disable prefixing the messages to be printed with...
 ##

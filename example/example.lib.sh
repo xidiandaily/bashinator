@@ -77,73 +77,78 @@ function __init() {
 function __main() {
 
 	## -- BEGIN YOUR OWN APPLICATION MAIN CODE HERE --
-
-	local i
-	for i in debug info notice warning err crit alert emerg; do
-		__msg ${i} "this is a ${i} test"
-	done
-
-	rm -v /does/not/exist >>"${_L}" 2>&1
-	mkdir -v /does/not/exist >>"${_L}" 2>&1
-	ls -v /does/not/exist >>"${_L}" 2>&1
-
-	exampleFunction "${ApplicationVariable1}" "${ApplicationVariable2}"
-
-	fooFunction fooArgs
-
+    declare -i num=0
+    for i in _msg_test msg_test cmd_test echo_color_text_test;
+    do
+        __Echo_White_On_Red "test case[$num]:$i";
+        eval "$i";
+        num=$(($num+1))
+    done
 	return 0 # success
 
 	## -- END YOUR OWN APPLICATION MAIN CODE HERE --
+}
 
+function Help(){
+    echo "Usage: ${__ScriptFile}  [OPTION...] [dst]"
+    echo ""
+    echo " [OPTION]"
+    echo "     balabalabala ..     balabalabala ...."
+    echo ""
+    echo " [EXAMPLE]"
+    echo "   ${__ScriptFile} option...."
+    echo ""
+    echo " [AUTHOR]"
+    echo "   lawrencechi 2017.03.17"
+}
+
+function _msg_test()
+{
+    local i
+    for i in debug info notice warning err crit alert emerg; do
+        __msg ${i} "this is a ${i} test"
+    done
+}
+
+function msg_test()
+{
+    local i
+    for i in msg msg_status msg_emergency msg_alert msg_critical msg_error msg_warning msg_notice msg_info msg_debug msg_ok msg_not_ok msg_failed msg_success msg_passed;do
+        eval $i "$i"
+    done
+}
+
+function cmd_test()
+{
+    # 这里有个bug，array_append 第一个值数不能有空格,有空格加多引号
+    array_append testcmd "\"ls -alh\"" "/sbin/ping -c 3 8.8.8.8" "whoami" "id" "touch chiyl && ls chiyl && rm -f chiyl"
+    local i
+    __msg info "call cmd without show result"
+    for i in "${testcmd[@]}";do
+        eval "cmd \"$i\""
+    done
+}
+
+function cmd_whit_output_test()
+{
+    # 这里有个bug，array_append 第一个值数不能有空格,有空格加多引号
+    array_append testcmd "\"ls -alh\"" "/sbin/ping -c 3 8.8.8.8" "whoami" "id" "touch chiyl && ls chiyl && rm -f chiyl"
+    local i
+    for i in "${testcmd[@]}";do
+        eval "cmd \"$i\" 1"
+    done
+}
+
+function echo_color_text_test()
+{
+    local i
+    for i in __Echo_Red __Echo_Green __Echo_Yellow __Echo_Blue __Echo_Yellow_On_Red __Echo_White_On_Red __Echo_White_On_Magenta __Echo_Normal;
+    do
+        eval "$i \"$i\""
+    done
 }
 
 ##
 ## application worker functions
 ##
 
-function exampleFunction() {
-
-	## ----- head -----
-	##
-	## DESCRIPTION:
-	##   this function does something
-	##
-	## ARGUMENTS:
-	##   1: fooArgument (req): contains foo
-	##   2: barArgument (opt): contains bar
-	##
-	## GLOBAL VARIABLES USED:
-	##   /
-	##
-
-	local fooArgument="${1}"
-	if [[ -z "${fooArgument}" ]]; then
-		__msg err "argument 1 (fooArgument) missing"
-		return 2 # error
-	fi
-	__msg debug "fooArgument: ${fooArgument}"
-
-	local barArgument="${2}"
-	__msg debug "barArgument: ${barArgument}"
-
-	## ----- main -----
-
-	__msg info "this is an example function"
-
-	__msg info "PATH: ${PATH}"
-	__msg info "umask: $(umask)"
-
-	return 0 # success
-}
-
-function fooFunction() {
-	barFunction barArgs
-}
-
-function barFunction() {
-	bazFunction bazArgs
-}
-
-function bazFunction() {
-	__die 1 "dying for test purposes"
-}
