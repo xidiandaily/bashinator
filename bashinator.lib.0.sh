@@ -1680,7 +1680,7 @@ function __SelectExample2
 {
     local oldifs=IFS
     declare -a options
-    while ISF='\n' read  -r file;do
+    while ISF='\n' read  -r file || [[ -n "$file" ]];do
         options+=("$file");
     done <${__TIMESTAMEFILE}
     unset IFS
